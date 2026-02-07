@@ -3,321 +3,102 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Stellar Galaxy - Ultra Fidelity</title>
+    <title>Stellar Galaxy - Multiverse Fidelity</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Pacifico&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body {
-            overflow: hidden;
-            height: 100%;
-            width: 100%;
-            background: #020005; /* Negro profundo */
-            font-family: 'Pacifico', cursive;
-            
-            /* ESTO ES LO QUE ARREGLA EL CONTROL EN MÓVIL */
-            touch-action: none; 
-            position: fixed; /* Evita rebotes en iOS */
+            overflow: hidden; height: 100%; width: 100%;
+            background: #020005; font-family: 'Pacifico', cursive;
+            touch-action: none; position: fixed;
         }
-
-        .webgl {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            outline: none;
-            z-index: 1;
-        }
-
-        /* --- DECORACIÓN FLOTANTE (SPARKLES) --- */
+        .webgl { position: fixed; top: 0; left: 0; width: 100%; height: 100%; outline: none; z-index: 1; }
+        
         .sparkle {
-            position: absolute;
-            color: rgba(180, 100, 255, 0.2);
-            font-family: sans-serif;
-            font-size: 24px;
-            animation: float 18s infinite linear;
-            z-index: 0;
-            pointer-events: none;
+            position: absolute; color: rgba(180, 100, 255, 0.2); font-family: sans-serif;
+            font-size: 24px; animation: float 18s infinite linear; z-index: 0; pointer-events: none;
             text-shadow: 0 0 10px rgba(138, 43, 226, 0.4);
         }
-
         @keyframes float {
             0% { transform: translateY(110vh) rotate(0deg) scale(0.5); opacity: 0; }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.6; }
+            20% { opacity: 0.6; } 80% { opacity: 0.6; }
             100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
         }
 
         .credits {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-            z-index: 10;
-            pointer-events: none;
-            text-shadow: 0 0 5px #9d4edd;
-            font-family: 'Orbitron', sans-serif;
-            letter-spacing: 2px;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: rgba(255, 255, 255, 0.5); font-size: 14px; z-index: 10; pointer-events: none;
+            text-shadow: 0 0 5px #9d4edd; font-family: 'Orbitron', sans-serif; letter-spacing: 2px;
         }
 
-        /* --- MENÚ DE CONFIGURACIÓN --- */
-        .menu-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 50px; /* Más grande para dedos */
-            height: 50px;
-            background: rgba(40, 0, 60, 0.5);
-            border: 1px solid rgba(147, 112, 219, 0.3);
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            z-index: 20;
-            backdrop-filter: blur(8px);
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+        /* Flecha guía para indicar movimiento lateral */
+        .guide {
+            position: fixed; top: 50%; right: 20px; transform: translateY(-50%);
+            color: rgba(255,255,255,0.2); font-size: 30px; animation: pulse 2s infinite; pointer-events: none;
         }
+        @keyframes pulse { 0% { opacity:0.1; transform:translateY(-50%) translateX(0); } 50% { opacity:0.6; transform:translateY(-50%) translateX(10px); } 100% { opacity:0.1; transform:translateY(-50%) translateX(0); } }
 
+        .menu-button { position: fixed; top: 20px; left: 20px; width: 50px; height: 50px; background: rgba(40, 0, 60, 0.5); border: 1px solid rgba(147, 112, 219, 0.3); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; z-index: 20; backdrop-filter: blur(8px); transition: all 0.3s; box-shadow: 0 0 15px rgba(0,0,0,0.5); }
         .menu-button:active { transform: scale(0.95); background: rgba(147, 112, 219, 0.4); }
-
-        .menu-button span {
-            display: block;
-            width: 26px;
-            height: 2px;
-            background: #e0b0ff;
-            margin: 3px 0;
-            border-radius: 1px;
-        }
-        
-        .config-panel {
-            position: fixed;
-            top: 0;
-            left: -100%;
-            width: 320px; /* Ancho cómodo */
-            height: 100%;
-            background: rgba(10, 5, 20, 0.96);
-            backdrop-filter: blur(15px);
-            z-index: 25;
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            border-right: 1px solid rgba(147, 112, 219, 0.2);
-            box-shadow: 10px 0 30px rgba(0,0,0,0.8);
-        }
-
-        /* En móviles pequeños, ocupar casi toda la pantalla */
+        .menu-button span { display: block; width: 26px; height: 2px; background: #e0b0ff; margin: 3px 0; border-radius: 1px; }
+        .config-panel { position: fixed; top: 0; left: -100%; width: 320px; height: 100%; background: rgba(10, 5, 20, 0.96); backdrop-filter: blur(15px); z-index: 25; padding: 25px; display: flex; flex-direction: column; overflow-y: auto; transition: left 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); border-right: 1px solid rgba(147, 112, 219, 0.2); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
         @media (max-width: 400px) { .config-panel { width: 85%; } }
-        
         .config-panel.open { left: 0; }
-        
-        .config-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .config-title {
-            color: #d8baff;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            letter-spacing: 1px;
-        }
-        
-        .close-button {
-            background: none; border: none; color: #d8baff; font-size: 28px;
-            cursor: pointer; width: 40px; height: 40px;
-            display: flex; align-items: center; justify-content: center;
-        }
-        
-        .config-section {
-            margin-bottom: 25px;
-            padding: 15px;
-            background: rgba(30, 10, 50, 0.3);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        
-        .config-section h3 {
-            color: #9d4edd;
-            margin-bottom: 15px;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
+        .config-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+        .config-title { color: #d8baff; font-family: 'Orbitron', sans-serif; font-size: 18px; letter-spacing: 1px; }
+        .close-button { background: none; border: none; color: #d8baff; font-size: 28px; cursor: pointer; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
+        .config-section { margin-bottom: 25px; padding: 15px; background: rgba(30, 10, 50, 0.3); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .config-section h3 { color: #9d4edd; margin-bottom: 15px; font-family: 'Orbitron', sans-serif; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
         .config-option { margin-bottom: 15px; }
-        
-        .config-option label {
-            display: block;
-            color: #ccc;
-            margin-bottom: 10px;
-            font-size: 14px;
-            font-family: sans-serif;
-        }
-        
-        /* Sliders robustos para tactil */
-        input[type="range"] {
-            width: 100%; height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px; outline: none; -webkit-appearance: none;
-        }
-        
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 24px; /* Hitbox grande */
-            height: 24px;
-            border-radius: 50%;
-            background: #9d4edd;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(157, 78, 221, 0.6);
-            border: 2px solid #fff;
-        }
-
-        /* Toggle Switch grande */
-        .toggle-switch {
-            position: relative; display: inline-block; width: 54px; height: 30px;
-        }
+        .config-option label { display: block; color: #ccc; margin-bottom: 10px; font-size: 14px; font-family: sans-serif; }
+        input[type="range"] { width: 100%; height: 6px; background: rgba(255, 255, 255, 0.1); border-radius: 3px; outline: none; -webkit-appearance: none; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; border-radius: 50%; background: #9d4edd; cursor: pointer; box-shadow: 0 0 10px rgba(157, 78, 221, 0.6); border: 2px solid #fff; }
+        .toggle-switch { position: relative; display: inline-block; width: 54px; height: 30px; }
         .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 30px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px;
-            background-color: #bbb; transition: .4s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: #bbb; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #5a189a; }
         input:checked + .slider:before { transform: translateX(24px); background-color: #fff; }
-
-        /* Colores grandes */
         .color-options { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
-        .color-option {
-            width: 38px; height: 38px; border-radius: 50%; cursor: pointer;
-            border: 2px solid transparent; transition: transform 0.2s;
-            box-shadow: 0 0 5px rgba(0,0,0,0.5);
-        }
+        .color-option { width: 38px; height: 38px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; transition: transform 0.2s; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
         .color-option.active { border-color: white; transform: scale(1.1); box-shadow: 0 0 15px currentColor; }
-        
-        .developer-info {
-            margin-top: auto; padding: 15px;
-            background: rgba(20, 20, 30, 0.5);
-            border-radius: 10px; text-align: center;
-            border: 1px solid rgba(138, 43, 226, 0.1);
-        }
-
-        .overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7); z-index: 14; display: none;
-            backdrop-filter: blur(2px);
-        }
+        .developer-info { margin-top: auto; padding: 15px; background: rgba(20, 20, 30, 0.5); border-radius: 10px; text-align: center; border: 1px solid rgba(138, 43, 226, 0.1); }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); z-index: 14; display: none; backdrop-filter: blur(2px); }
         .overlay.active { display: block; }
     </style>
 </head>
 <body>
     <canvas class="webgl"></canvas>
-    <div class="credits">JARVIS SYSTEM ACTIVE</div>
+    <div class="credits">DESLIZA PARA EXPLORAR</div>
+    <div class="guide">➤</div>
     
-    <div class="menu-button" id="menuButton">
-        <span></span><span></span><span></span>
-    </div>
-    
+    <div class="menu-button" id="menuButton"><span></span><span></span><span></span></div>
     <div class="overlay" id="overlay"></div>
     
     <div class="config-panel" id="configPanel">
-        <div class="config-header">
-            <div class="config-title">SYSTEM CONFIG</div>
-            <button class="close-button" id="closeButton">✕</button>
-        </div>
-        
-        <div class="config-section">
-            <h3>Constelación (Estrellas)</h3>
-            <div class="config-option">
-                <label for="starSize">Magnitud (Tamaño)</label>
-                <input type="range" id="starSize" min="0.5" max="2.0" step="0.1" value="1.0">
-            </div>
-            <div class="config-option">
-                <label>Espectro Cromático</label>
-                <div class="color-options">
-                    <div class="color-option active" style="background-color: #9400D3;" data-color="#9400D3"></div>
-                    <div class="color-option" style="background-color: #4B0082;" data-color="#4B0082"></div>
-                    <div class="color-option" style="background-color: #e0aaff;" data-color="#e0aaff"></div>
-                    <div class="color-option" style="background-color: #00FFFF;" data-color="#00FFFF"></div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="config-section">
-            <h3>Supernova Central</h3>
-            <div class="config-option">
-                <label for="centerSize">Masa del Núcleo</label>
-                <input type="range" id="centerSize" min="2.0" max="6.0" step="0.2" value="3.8">
-            </div>
-        </div>
-        
-        <div class="config-section">
-            <h3>Entorno Espacial</h3>
-            <div class="config-option">
-                <label for="nebulaDensity">Densidad Nebulosa</label>
-                <input type="range" id="nebulaDensity" min="0" max="1" step="0.1" value="0.6">
-            </div>
-            <div class="config-option">
-                <label for="bgBrightness">Estrellas de Fondo</label>
-                <input type="range" id="bgBrightness" min="0.1" max="1" step="0.1" value="0.8">
-            </div>
-        </div>
-
-        <div class="config-section">
-            <h3>Mecánica Orbital</h3>
-            <div class="config-option">
-                <label>Rotación Automática</label>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="autoRotateToggle" checked>
-                    <span class="slider"></span>
-                </label>
-            </div>
-        </div>
-        
-        <div class="developer-info">
-            <p style="color: #bbb; font-size: 11px; font-family: sans-serif;">
-                Performance: High Fidelity<br>
-                Control: Mobile Optimized
-            </p>
-        </div>
+        <div class="config-header"><div class="config-title">SYSTEM CONFIG</div><button class="close-button" id="closeButton">✕</button></div>
+        <div class="config-section"><h3>Constelación (Estrellas)</h3><div class="config-option"><label for="starSize">Magnitud (Tamaño)</label><input type="range" id="starSize" min="0.5" max="2.0" step="0.1" value="1.0"></div><div class="config-option"><label>Espectro Cromático</label><div class="color-options"><div class="color-option active" style="background-color: #9400D3;" data-color="#9400D3"></div><div class="color-option" style="background-color: #4B0082;" data-color="#4B0082"></div><div class="color-option" style="background-color: #e0aaff;" data-color="#e0aaff"></div><div class="color-option" style="background-color: #00FFFF;" data-color="#00FFFF"></div></div></div></div>
+        <div class="config-section"><h3>Supernova Central</h3><div class="config-option"><label for="centerSize">Masa del Núcleo</label><input type="range" id="centerSize" min="2.0" max="6.0" step="0.2" value="3.8"></div></div>
+        <div class="config-section"><h3>Entorno Espacial</h3><div class="config-option"><label for="nebulaDensity">Densidad Nebulosa</label><input type="range" id="nebulaDensity" min="0" max="1" step="0.1" value="0.6"></div><div class="config-option"><label for="bgBrightness">Estrellas de Fondo</label><input type="range" id="bgBrightness" min="0.1" max="1" step="0.1" value="0.8"></div></div>
+        <div class="config-section"><h3>Mecánica Orbital</h3><div class="config-option"><label>Rotación Automática</label><label class="toggle-switch"><input type="checkbox" id="autoRotateToggle" checked><span class="slider"></span></label></div></div>
+        <div class="developer-info"><p style="color: #bbb; font-size: 11px; font-family: sans-serif;">Performance: High Fidelity<br>Control: Mobile Optimized</p></div>
     </div>
 
     <script type="module">
         import * as THREE from "https://cdn.skypack.dev/three@0.132.2";
         import { OrbitControls } from "https://cdn.skypack.dev/three@0.132.2/examples/jsm/controls/OrbitControls.js";
 
-        // --- 1. CSS VISUALS (Sparkles) ---
+        // --- 1. CSS VISUALS (Sparkles ORIGINALES) ---
         function createCSSSparkles() {
             const symbols = ['✦', '✨', '⋆', '⭒', '✴', '•'];
             const container = document.body;
-            // Aumentamos cantidad porque dijiste "no simplificar"
             const count = 40; 
             for (let i = 0; i < count; i++) {
                 const el = document.createElement('div');
                 el.className = 'sparkle';
                 el.textContent = symbols[Math.floor(Math.random() * symbols.length)];
                 el.style.left = `${Math.random() * 100}%`;
-                el.style.animationDuration = `${10 + Math.random() * 20}s`; // Lentos y elegantes
+                el.style.animationDuration = `${10 + Math.random() * 20}s`;
                 el.style.animationDelay = `${Math.random() * 10}s`;
                 el.style.fontSize = `${10 + Math.random() * 25}px`;
                 container.appendChild(el);
@@ -328,260 +109,221 @@
         // --- 2. THREE.JS SETUP ---
         const canvas = document.querySelector('canvas.webgl');
         const scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x020005, 0.025); // Niebla violeta oscura para profundidad
+        // Mantenemos tu niebla original
+        scene.fog = new THREE.FogExp2(0x020005, 0.025); 
 
-        // Configuración "Pesada" (No simplificada)
+        // === GRUPOS PARA EL MULTIVERSO (Añadido) ===
+        const galaxyGroup = new THREE.Group();
+        const frogGroup = new THREE.Group();
+        const taurusGroup = new THREE.Group();
+        
+        // Posicionamiento en el "Mapa" del Multiverso
+        galaxyGroup.position.set(0, 0, 0);
+        frogGroup.position.set(100, 0, 0);   // A la derecha
+        taurusGroup.position.set(200, 0, 0); // Más a la derecha
+
+        scene.add(galaxyGroup);
+        scene.add(frogGroup);
+        scene.add(taurusGroup);
+
+        // Configuración original intacta
         const parameters = {
-            count: 35,              // MUCHAS estrellas orbitando (antes 14-16, ahora 35)
-            particlesPerStar: 1500, // Alta fidelidad de partículas por estrella
-            size: 1.0,
-            colorInside: '#9400D3', // DarkViolet
-            colorOutside: '#4B0082', // Indigo
-            centerSize: 3.8,
-            centerParticles: 5000,  // Núcleo masivo
-            nebulaDensity: 0.6,
-            bgBrightness: 0.8,
-            autoRotate: true,
-            rotateSpeed: 0.2
+            count: 35, particlesPerStar: 1500, size: 1.0,
+            colorInside: '#9400D3', colorOutside: '#4B0082',
+            centerSize: 3.8, centerParticles: 5000,
+            nebulaDensity: 0.6, bgBrightness: 0.8,
+            autoRotate: true, rotateSpeed: 0.2
         };
 
-        let galaxyObjects = []; // Almacena las estrellas orbitando
-        let centerObject = null;
-        let nebulaSystem = null;
-        let bgStars = null;
-        let shootingStars = [];
+        let galaxyObjects = [], centerObject = null, nebulaSystem = null, bgStars = null, shootingStars = [];
 
-        // --- 3. ALGORITMOS DE GEOMETRÍA VOLUMÉTRICA ---
-        
-        // Función matemática compleja para generar una nube de puntos con forma de estrella 3D
+        // --- 3. GEOMETRÍA VOLUMÉTRICA ORIGINAL ---
         const createStarVolumeGeometry = (size, particleCount) => {
             const positions = new Float32Array(particleCount * 3);
             const colors = new Float32Array(particleCount * 3);
             const sizes = new Float32Array(particleCount);
-            
             const colorIn = new THREE.Color(parameters.colorInside);
             const colorOut = new THREE.Color(parameters.colorOutside);
 
             for(let i=0; i<particleCount; i++) {
                 const i3 = i * 3;
-
-                // MATEMÁTICA DE ESTRELLA 3D (No simplificada)
-                // Usamos coordenadas esféricas modificadas
-                const angle = Math.random() * Math.PI * 2; // Ángulo plano
-                const phi = Math.acos(2 * Math.random() - 1); // Ángulo elevación
-                
-                // Definir los "brazos" de la estrella. 5 puntas estándar.
-                // Modulamos el radio máximo permitido en función del ángulo
-                const numPoints = 5;
-                // Fórmula de onda para crear picos
-                const spike = Math.pow(Math.abs(Math.sin(angle * numPoints * 0.5)), 0.5); 
-                const verticalSpike = Math.pow(Math.abs(Math.cos(phi * 3)), 0.5); // Puntas también en vertical
-                
-                // Radio base + picos
+                const angle = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                const spike = Math.pow(Math.abs(Math.sin(angle * 2.5)), 0.5); 
+                const verticalSpike = Math.pow(Math.abs(Math.cos(phi * 3)), 0.5);
                 const rMax = size * (0.3 + 0.7 * spike * (0.5 + 0.5 * verticalSpike));
-
-                // Distribución volumétrica (más denso en el centro)
                 const r = Math.pow(Math.random(), 0.9) * rMax;
-
-                // Convertir a Cartesiano
                 const x = r * Math.sin(phi) * Math.cos(angle);
                 const y = r * Math.sin(phi) * Math.sin(angle);
                 const z = r * Math.cos(phi);
-
-                // Añadir turbulencia (ruido) para que parezca gas/plasma
                 positions[i3] = x + (Math.random()-0.5)*0.08*size;
                 positions[i3+1] = y + (Math.random()-0.5)*0.08*size;
                 positions[i3+2] = z + (Math.random()-0.5)*0.08*size;
-
-                // Color Gradiente: Centro brillante -> Borde oscuro
                 const normalizedDist = r / size;
                 const mixedColor = colorIn.clone().lerp(colorOut, normalizedDist);
-                
-                // Añadir "Hotspots" (puntos blancos brillantes aleatorios)
                 if(Math.random() > 0.9) mixedColor.setHex(0xFFFFFF);
-
                 colors[i3] = mixedColor.r; colors[i3+1] = mixedColor.g; colors[i3+2] = mixedColor.b;
-                
-                // Tamaños variables
                 sizes[i] = Math.random();
             }
-
             const geometry = new THREE.BufferGeometry();
             geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
             geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1)); // Atributo custom para shader/material
+            geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
             return geometry;
         };
 
-        // Fondo de estrellas infinito
         const createBackgroundField = () => {
-            const count = 5000;
-            const pos = new Float32Array(count * 3);
-            const col = new Float32Array(count * 3);
-            const sz = new Float32Array(count);
-
+            const count = 5000; const pos = new Float32Array(count * 3); const col = new Float32Array(count * 3); const sz = new Float32Array(count);
             for(let i=0; i<count; i++){
-                const r = 50 + Math.random() * 150; // Muy lejos
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.acos(2 * Math.random() - 1);
-                
-                pos[i*3] = r * Math.sin(phi) * Math.cos(theta);
-                pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
-                pos[i*3+2] = r * Math.cos(phi);
-
-                const c = new THREE.Color().setHSL(Math.random()*0.2 + 0.7, 0.8, 0.8); // Azules/Violetas
-                col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b;
-                sz[i] = Math.random();
+                const r = 50 + Math.random() * 150; const theta = Math.random() * Math.PI * 2; const phi = Math.acos(2 * Math.random() - 1);
+                pos[i*3] = r * Math.sin(phi) * Math.cos(theta); pos[i*3+1] = r * Math.sin(phi) * Math.sin(theta); pos[i*3+2] = r * Math.cos(phi);
+                const c = new THREE.Color().setHSL(Math.random()*0.2 + 0.7, 0.8, 0.8);
+                col[i*3] = c.r; col[i*3+1] = c.g; col[i*3+2] = c.b; sz[i] = Math.random();
             }
             const geo = new THREE.BufferGeometry();
             geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
             geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
             geo.setAttribute('size', new THREE.BufferAttribute(sz, 1));
-            
-            return new THREE.Points(geo, new THREE.PointsMaterial({
-                size: 0.25, vertexColors: true, transparent: true, opacity: parameters.bgBrightness, depthWrite: false
-            }));
+            return new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true, opacity: parameters.bgBrightness, depthWrite: false }));
         };
 
-        // Nebulosa envolvente
         const createNebula = () => {
-            const count = 2500;
-            const pos = new Float32Array(count * 3);
-            const col = new Float32Array(count * 3);
-            
+            const count = 2500; const pos = new Float32Array(count * 3); const col = new Float32Array(count * 3);
             for(let i=0; i<count; i++){
-                const r = 15 + Math.random() * 35;
-                const theta = Math.random() * Math.PI * 2;
-                const phi = Math.random() * Math.PI;
-                
-                pos[i*3] = r * Math.sin(phi) * Math.cos(theta);
-                pos[i*3+1] = (r * Math.sin(phi) * Math.sin(theta)) * 0.7; // Aplanada un poco
-                pos[i*3+2] = r * Math.cos(phi);
-                
-                // Color Púrpura Nebuloso Oscuro
+                const r = 15 + Math.random() * 35; const theta = Math.random() * Math.PI * 2; const phi = Math.random() * Math.PI;
+                pos[i*3] = r * Math.sin(phi) * Math.cos(theta); pos[i*3+1] = (r * Math.sin(phi) * Math.sin(theta)) * 0.7; pos[i*3+2] = r * Math.cos(phi);
                 col[i*3] = 0.2; col[i*3+1] = 0.0; col[i*3+2] = 0.4;
             }
             const geo = new THREE.BufferGeometry();
             geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
             geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-            
-            // Textura generada por código para suavidad
-            const canvas = document.createElement('canvas'); canvas.width=32; canvas.height=32;
-            const ctx = canvas.getContext('2d');
-            const grd = ctx.createRadialGradient(16,16,0,16,16,16);
-            grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
-            ctx.fillStyle = grd; ctx.fillRect(0,0,32,32);
-            const tex = new THREE.CanvasTexture(canvas);
-
-            return new THREE.Points(geo, new THREE.PointsMaterial({
-                size: 4.0, map: tex, vertexColors: true, transparent: true, 
-                opacity: parameters.nebulaDensity * 0.5, depthWrite: false, blending: THREE.AdditiveBlending
-            }));
+            const canvas = document.createElement('canvas'); canvas.width=32; canvas.height=32; const ctx = canvas.getContext('2d');
+            const grd = ctx.createRadialGradient(16,16,0,16,16,16); grd.addColorStop(0, 'rgba(255,255,255,1)'); grd.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = grd; ctx.fillRect(0,0,32,32); const tex = new THREE.CanvasTexture(canvas);
+            return new THREE.Points(geo, new THREE.PointsMaterial({ size: 4.0, map: tex, vertexColors: true, transparent: true, opacity: parameters.nebulaDensity * 0.5, depthWrite: false, blending: THREE.AdditiveBlending }));
         };
 
-        // --- 4. CLASE SHOOTING STAR (FUGACES) ---
+        const generateGalaxy = () => {
+            // Modificado para usar galaxyGroup en lugar de scene
+            while(galaxyGroup.children.length > 0){ 
+                const obj = galaxyGroup.children[0];
+                if(obj.geometry) obj.geometry.dispose(); if(obj.material) obj.material.dispose();
+                galaxyGroup.remove(obj); 
+            }
+            galaxyObjects = [];
+
+            const particleMaterial = new THREE.PointsMaterial({ size: 0.05, sizeAttenuation: true, vertexColors: true, transparent: true, opacity: 0.95, blending: THREE.AdditiveBlending, depthWrite: false });
+
+            // A. Satélites
+            for(let i=0; i<parameters.count; i++) {
+                const geo = createStarVolumeGeometry(parameters.size, parameters.particlesPerStar);
+                const star = new THREE.Points(geo, particleMaterial.clone());
+                const radius = 8 + Math.random() * 18; const angle = (i / parameters.count) * Math.PI * 2; const altitude = (Math.random() - 0.5) * 12;
+                star.position.set(Math.cos(angle)*radius, altitude, Math.sin(angle)*radius);
+                star.rotation.z = Math.random() * Math.PI; star.rotation.x = Math.random() * Math.PI;
+                galaxyGroup.add(star); galaxyObjects.push(star);
+            }
+            // B. Centro
+            const centerGeo = createStarVolumeGeometry(parameters.centerSize, parameters.centerParticles);
+            centerObject = new THREE.Points(centerGeo, particleMaterial);
+            galaxyGroup.add(centerObject);
+            // C. Nebulosa
+            nebulaSystem = createNebula();
+            galaxyGroup.add(nebulaSystem);
+            // D. Fondo
+            bgStars = createBackgroundField();
+            galaxyGroup.add(bgStars);
+        };
+
+        generateGalaxy();
+
         class ShootingStar {
             constructor() {
-                const geo = new THREE.BufferGeometry();
-                const pos = new Float32Array(6); // Línea de 2 puntos
-                geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+                const geo = new THREE.BufferGeometry(); const pos = new Float32Array(6); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
                 this.mesh = new THREE.Line(geo, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 }));
-                this.reset();
-                scene.add(this.mesh);
+                this.reset(); scene.add(this.mesh);
             }
-            reset() {
-                this.active = false;
-                this.mesh.material.opacity = 0;
-                this.wait = Math.random() * 200;
-                this.timer = 0;
-            }
+            reset() { this.active = false; this.mesh.material.opacity = 0; this.wait = Math.random() * 200; this.timer = 0; }
             spawn() {
-                this.active = true;
-                this.progress = 0;
-                this.speed = 0.04 + Math.random() * 0.02;
-                const r = 40;
-                const theta = Math.random() * Math.PI * 2;
-                const h = (Math.random()-0.5) * 30;
-                this.start = new THREE.Vector3(r*Math.cos(theta), h, r*Math.sin(theta));
-                this.end = new THREE.Vector3(r*Math.cos(theta+Math.PI), h-10, r*Math.sin(theta+Math.PI));
+                this.active = true; this.progress = 0; this.speed = 0.04 + Math.random() * 0.02;
+                const r = 40; const theta = Math.random() * Math.PI * 2; const h = (Math.random()-0.5) * 30;
+                this.start = new THREE.Vector3(r*Math.cos(theta), h, r*Math.sin(theta)); this.end = new THREE.Vector3(r*Math.cos(theta+Math.PI), h-10, r*Math.sin(theta+Math.PI));
             }
             update() {
-                if(!this.active) {
-                    this.timer++;
-                    if(this.timer > this.wait) this.spawn();
-                    return;
-                }
+                if(!this.active) { this.timer++; if(this.timer > this.wait) this.spawn(); return; }
                 this.progress += this.speed;
-                const p1 = new THREE.Vector3().lerpVectors(this.start, this.end, this.progress);
-                const p2 = new THREE.Vector3().lerpVectors(this.start, this.end, Math.max(0, this.progress - 0.2)); // Cola larga
-                
-                const pos = this.mesh.geometry.attributes.position.array;
-                pos[0]=p1.x; pos[1]=p1.y; pos[2]=p1.z;
-                pos[3]=p2.x; pos[4]=p2.y; pos[5]=p2.z;
+                const p1 = new THREE.Vector3().lerpVectors(this.start, this.end, this.progress); const p2 = new THREE.Vector3().lerpVectors(this.start, this.end, Math.max(0, this.progress - 0.2));
+                const pos = this.mesh.geometry.attributes.position.array; pos[0]=p1.x; pos[1]=p1.y; pos[2]=p1.z; pos[3]=p2.x; pos[4]=p2.y; pos[5]=p2.z;
                 this.mesh.geometry.attributes.position.needsUpdate = true;
-                
-                if(this.progress < 0.2) this.mesh.material.opacity = this.progress * 5;
-                else if(this.progress > 0.8) this.mesh.material.opacity = (1-this.progress)*5;
-                
+                if(this.progress < 0.2) this.mesh.material.opacity = this.progress * 5; else if(this.progress > 0.8) this.mesh.material.opacity = (1-this.progress)*5;
                 if(this.progress >= 1) this.reset();
             }
         }
-
-        // --- 5. GENERACIÓN DE LA ESCENA ---
-        const generateGalaxy = () => {
-            // Limpieza total para regenerar
-            galaxyObjects.forEach(s => { s.geometry.dispose(); s.material.dispose(); scene.remove(s); });
-            galaxyObjects = [];
-            if(centerObject) { centerObject.geometry.dispose(); centerObject.material.dispose(); scene.remove(centerObject); }
-            if(nebulaSystem) { nebulaSystem.geometry.dispose(); nebulaSystem.material.dispose(); scene.remove(nebulaSystem); }
-
-            const particleMaterial = new THREE.PointsMaterial({
-                size: 0.05,
-                sizeAttenuation: true,
-                vertexColors: true,
-                transparent: true,
-                opacity: 0.95,
-                blending: THREE.AdditiveBlending,
-                depthWrite: false
-            });
-
-            // A. Generar estrellas orbitando (Gran cantidad)
-            for(let i=0; i<parameters.count; i++) {
-                const geo = createStarVolumeGeometry(parameters.size, parameters.particlesPerStar);
-                const star = new THREE.Points(geo, particleMaterial.clone()); // Material clonado para que no compartan instancias si modificamos algo
-                
-                // Distribución muy amplia (Para que se vea bien en celular)
-                const radius = 8 + Math.random() * 18; 
-                const angle = (i / parameters.count) * Math.PI * 2;
-                const altitude = (Math.random() - 0.5) * 12;
-
-                star.position.set(Math.cos(angle)*radius, altitude, Math.sin(angle)*radius);
-                
-                // Rotación aleatoria inicial
-                star.rotation.z = Math.random() * Math.PI;
-                star.rotation.x = Math.random() * Math.PI;
-
-                scene.add(star);
-                galaxyObjects.push(star);
-            }
-
-            // B. Generar Centro
-            const centerGeo = createStarVolumeGeometry(parameters.centerSize, parameters.centerParticles);
-            centerObject = new THREE.Points(centerGeo, particleMaterial);
-            scene.add(centerObject);
-
-            // C. Generar Nebulosa
-            nebulaSystem = createNebula();
-            scene.add(nebulaSystem);
-        };
-
-        bgStars = createBackgroundField();
-        scene.add(bgStars);
-        
-        generateGalaxy();
-
-        // Inicializar estrellas fugaces
         for(let i=0; i<8; i++) shootingStars.push(new ShootingStar());
+
+        // ==========================================
+        // --- AQUÍ AÑADO EL MUNDO DE LA RANA ---
+        // ==========================================
+        function initFrog() {
+            // Textura auxiliar
+            const c = document.createElement('canvas'); c.width=32; c.height=32;
+            const x = c.getContext('2d'); const g = x.createRadialGradient(16,16,0,16,16,16);
+            g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(1,'rgba(0,0,0,0)');
+            x.fillStyle=g; x.fillRect(0,0,32,32); const tex = new THREE.CanvasTexture(c);
+
+            const frogPoints = [
+                {x:-0.4,y:-0.6}, {x:-0.25,y:-0.75}, {x:-0.1,y:-0.6}, {x:0.1,y:-0.6}, {x:0.25,y:-0.75}, {x:0.4,y:-0.6},
+                {x:-0.1,y:-0.55}, {x:0.0,y:-0.5}, {x:0.1,y:-0.55}, {x:-0.5,y:-0.3}, {x:-0.6,y:-0.1}, {x:0.5,y:-0.3}, {x:0.6,y:-0.1},
+                {x:0.0,y:0.1}, {x:-0.65,y:0.2}, {x:-0.5,y:0.6}, {x:-0.2,y:0.75}, {x:0.65,y:0.2}, {x:0.5,y:0.6}, {x:0.2,y:0.75},
+                {x:0.0,y:0.8}, {x:-0.7,y:0.5}, {x:-0.9,y:0.3}, {x:-0.85,y:0.7}, {x:0.7,y:0.5}, {x:0.9,y:0.3}, {x:0.85,y:0.7}
+            ];
+            const scale = 40; const pos = []; const linePos = [];
+            frogPoints.forEach(p => pos.push(p.x * scale, -p.y * scale, 0));
+            for(let i=0; i<frogPoints.length; i++) for(let j=i+1; j<frogPoints.length; j++) {
+                const dx=frogPoints[i].x-frogPoints[j].x, dy=frogPoints[i].y-frogPoints[j].y;
+                if(Math.sqrt(dx*dx+dy*dy)<0.35) linePos.push(frogPoints[i].x*scale, -frogPoints[i].y*scale, 0, frogPoints[j].x*scale, -frogPoints[j].y*scale, 0);
+            }
+            const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+            const pMat = new THREE.PointsMaterial({ color: '#4cc9f0', size: 1.5, map: tex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+            frogGroup.add(new THREE.Points(pGeo, pMat));
+            const lGeo = new THREE.BufferGeometry(); lGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePos, 3));
+            frogGroup.add(new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({ color: '#2288ff', transparent: true, opacity: 0 })));
+            
+            // Fondo
+            const bgGeo = new THREE.BufferGeometry(); const bgPos = [];
+            for(let i=0; i<400; i++) bgPos.push((Math.random()-0.5)*100, (Math.random()-0.5)*100, (Math.random()-0.5)*100);
+            bgGeo.setAttribute('position', new THREE.Float32BufferAttribute(bgPos, 3));
+            frogGroup.add(new THREE.Points(bgGeo, new THREE.PointsMaterial({size:0.2, color:'#0033aa', transparent:true, opacity:0})));
+        }
+        initFrog();
+
+        // ==========================================
+        // --- 3. AQUÍ AÑADO EL MUNDO DE TAURO ---
+        // ==========================================
+        function initTaurus() {
+            // Reutilizo textura
+            const c = document.createElement('canvas'); c.width=32; c.height=32;
+            const x = c.getContext('2d'); const g = x.createRadialGradient(16,16,0,16,16,16);
+            g.addColorStop(0,'rgba(255,255,255,1)'); g.addColorStop(1,'rgba(0,0,0,0)');
+            x.fillStyle=g; x.fillRect(0,0,32,32); const tex = new THREE.CanvasTexture(c);
+
+            const stars = [
+                {x:0.1,y:0.1,c:'#ff4444',s:3}, {x:0.05,y:-0.5,c:'#e0aaff',s:2}, {x:0.4,y:-0.3,c:'#e0aaff',s:2},
+                {x:-0.05,y:0.05,c:'#e0aaff',s:1.5}, {x:-0.1,y:0.15,c:'#e0aaff',s:1.5}, {x:0.0,y:0.25,c:'#e0aaff',s:1.5},
+                {x:-0.6,y:-0.1,c:'#e0aaff',s:2}, {x:-0.58,y:-0.08,c:'#e0aaff',s:1.5}, {x:0.02,y:0.02,c:'#e0aaff',s:1.8}
+            ];
+            const cons = [[0,8],[8,3],[3,4],[4,5],[0,2],[8,1]];
+            const scale = 120; const pos = [], col = [], lines = [];
+            stars.forEach(s => { pos.push(s.x*scale, -s.y*scale, 0); const c = new THREE.Color(s.c); col.push(c.r,c.g,c.b); });
+            cons.forEach(p => { const s1=stars[p[0]], s2=stars[p[1]]; lines.push(s1.x*scale, -s1.y*scale, 0, s2.x*scale, -s2.y*scale, 0); });
+            
+            const pGeo = new THREE.BufferGeometry(); pGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); pGeo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+            const pMat = new THREE.PointsMaterial({ size: 3.0, vertexColors: true, map: tex, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending });
+            taurusGroup.add(new THREE.Points(pGeo, pMat));
+            const lGeo = new THREE.BufferGeometry(); lGeo.setAttribute('position', new THREE.Float32BufferAttribute(lines, 3));
+            taurusGroup.add(new THREE.LineSegments(lGeo, new THREE.LineBasicMaterial({ color: '#aa88ff', transparent: true, opacity: 0 })));
+        }
+        initTaurus();
 
         // --- 6. RENDERER Y CÁMARA ---
         const sizes = { width: window.innerWidth, height: window.innerHeight };
@@ -591,7 +333,6 @@
             camera.aspect = sizes.width / sizes.height;
             camera.updateProjectionMatrix();
             renderer.setSize(sizes.width, sizes.height);
-            // IMPORTANTE: Limitar pixelRatio en móviles de alta gama para que no se caliente
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         });
 
@@ -609,7 +350,12 @@
         controls.dampingFactor = 0.05;
         controls.autoRotate = parameters.autoRotate;
         controls.autoRotateSpeed = parameters.rotateSpeed;
-        controls.enablePan = false; // Desactivar paneo para mejor control móvil
+        
+        // --- CAMBIO CLAVE: PERMITIR PANEO LATERAL ---
+        controls.enablePan = true; 
+        controls.screenSpacePanning = true; // Moverse como mapa 2D
+        controls.minDistance = 10; // Restringir zoom para obligar al paneo
+        controls.maxDistance = 60; // No alejarse demasiado
 
         // --- 7. UI LOGIC ---
         const menuButton = document.getElementById('menuButton');
@@ -626,7 +372,6 @@
         closeButton.addEventListener('click', () => toggleMenu(false));
         overlay.addEventListener('click', () => toggleMenu(false));
 
-        // Listeners Inputs
         document.getElementById('starSize').addEventListener('input', (e) => {
             parameters.size = parseFloat(e.target.value);
             generateGalaxy();
@@ -653,7 +398,6 @@
                 document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('active'));
                 option.classList.add('active');
                 parameters.colorInside = option.dataset.color;
-                // Generar color externo un poco más oscuro
                 const c = new THREE.Color(parameters.colorInside);
                 c.offsetHSL(0, 0, -0.15);
                 parameters.colorOutside = '#' + c.getHexString();
@@ -661,27 +405,49 @@
             });
         });
 
-        // --- 8. ANIMATION LOOP ---
+        // --- 8. ANIMATION LOOP CON LÓGICA DE MULTIVERSO ---
         const clock = new THREE.Clock();
         const tick = () => {
             const elapsedTime = clock.getElapsedTime();
             controls.update();
 
-            // Rotación local de estrellas (para que brillen)
-            galaxyObjects.forEach((star, index) => {
-                star.rotation.z += 0.003 * (index % 2 === 0 ? 1 : -1);
-                // "LookAt" manual si quisieras que miren a la cámara, pero al ser volumen 3D no es 100% necesario.
-                // Sin embargo, si lo quieres como el link 1:
-                star.lookAt(camera.position); 
-            });
+            // Lógica de posición: ¿Dónde mira la cámara?
+            // Usamos controls.target.x o camera.position.x para saber en qué "universo" estamos
+            const currentX = camera.position.x; 
 
-            if(centerObject) {
-                centerObject.lookAt(camera.position);
-                const pulse = 1 + Math.sin(elapsedTime * 2) * 0.05;
-                centerObject.scale.set(pulse, pulse, pulse);
+            // Universo 1 (Galaxia): X=0
+            let opGalaxy = 1 - Math.abs(currentX - 0) / 60;
+            // Universo 2 (Rana): X=100
+            let opFrog = 1 - Math.abs(currentX - 100) / 60;
+            // Universo 3 (Tauro): X=200
+            let opTaurus = 1 - Math.abs(currentX - 200) / 60;
+
+            // Clampear opacidades
+            opGalaxy = Math.max(0, Math.min(1, opGalaxy));
+            opFrog = Math.max(0, Math.min(1, opFrog));
+            opTaurus = Math.max(0, Math.min(1, opTaurus));
+
+            // Aplicar opacidad
+            if(galaxyGroup.visible = opGalaxy > 0.01) {
+                galaxyGroup.traverse(o => { if(o.material && o.material.transparent) o.material.opacity = (o.userData.baseOp||1) * opGalaxy; });
+                galaxyObjects.forEach((star, index) => { 
+                    star.rotation.z += 0.003 * (index % 2 === 0 ? 1 : -1); 
+                    star.lookAt(camera.position); 
+                });
+                if(centerObject) { centerObject.lookAt(camera.position); centerObject.scale.setScalar(1 + Math.sin(elapsedTime * 2) * 0.05); }
+                if(nebulaSystem) nebulaSystem.rotation.y = elapsedTime * 0.01;
             }
 
-            if(nebulaSystem) nebulaSystem.rotation.y = elapsedTime * 0.01;
+            if(frogGroup.visible = opFrog > 0.01) {
+                frogGroup.traverse(o => { if(o.material && o.material.transparent) o.material.opacity = opFrog; });
+                frogGroup.rotation.z = Math.sin(elapsedTime * 0.5) * 0.05; // Leve movimiento vida
+                frogGroup.lookAt(camera.position);
+            }
+
+            if(taurusGroup.visible = opTaurus > 0.01) {
+                taurusGroup.traverse(o => { if(o.material && o.material.transparent) o.material.opacity = opTaurus; });
+                taurusGroup.lookAt(camera.position);
+            }
 
             shootingStars.forEach(s => s.update());
 
@@ -696,7 +462,6 @@
         <source src="https://github.com/Gon-p/G-/raw/refs/heads/main/adore%20-%20_did%20i%20tell%20u%20that%20i%20miss%20u_%20(lyric%20video).m4a" type="audio/mpeg">
     </audio>
     <script>
-        // En móviles el audio no suena hasta que tocas la pantalla
         const audio = document.getElementById('bg-music');
         const startAudio = () => {
             if(audio.paused) audio.play();
